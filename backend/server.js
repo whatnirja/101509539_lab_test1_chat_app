@@ -105,6 +105,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("sendGroupMessage", async ({ from_user, room, message }) => {
+    console.log("sendGroupMessage received:", from_user, room, message);
     if (!from_user || !room || !message?.trim()) return;
 
     const msgDoc = await GroupMessage.create({
@@ -113,6 +114,8 @@ io.on("connection", (socket) => {
       message: message.trim(),
       date_sent: new Date(),
     });
+
+    console.log("Emitting groupMessage to room:", room, "with message:", msgDoc);
 
     io.to(room).emit("groupMessage", msgDoc);
   });
@@ -129,6 +132,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("sendPrivateMessage", async ({ from_user, to_user, message }) => {
+    console.log("sendPrivateMessage received:", from_user, to_user, message);
     if (!from_user || !to_user || !message?.trim()) return;
 
     const msgDoc = await PrivateMessage.create({
@@ -137,6 +141,8 @@ io.on("connection", (socket) => {
       message: message.trim(),
       date_sent: new Date(),
     });
+
+    console.log("Emitting privateMessage to users:", from_user, to_user, "with message:", msgDoc);
 
     const toInfo = onlineUsers.get(to_user);
     const fromInfo = onlineUsers.get(from_user);
